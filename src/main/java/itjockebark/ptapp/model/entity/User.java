@@ -1,5 +1,6 @@
-package itjockebark.ptapp.model;
+package itjockebark.ptapp.model.entity;
 
+import itjockebark.ptapp.model.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -21,13 +22,10 @@ public class User {
     private String lastName;
     @Column(name = "birthdate")
     private LocalDate birthdate;
-
- /*
     @Column(name="role", length = 32)
     private UserRole role;
     @Column(name="is_active")
     private boolean isActive;
-*/
 
     public void setEmail(String email) {
         this.email = email;
@@ -67,5 +65,21 @@ public class User {
 
     public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
