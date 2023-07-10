@@ -24,6 +24,7 @@ public class UserService {
         user.setPassword(dto.getPassword());
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
+        user.setBirthdate(dto.getBirthdate());
         user.setRole(UserRole.valueOf(rolePrefix));
         user.setActive(true);
 

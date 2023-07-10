@@ -1,11 +1,11 @@
 package itjockebark.ptapp.model.entity;
 
 import itjockebark.ptapp.model.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
@@ -59,12 +59,20 @@ public class User {
         this.lastName = lastName;
     }
 
-    public LocalDate getBirthdate() {
-        return birthdate;
+    public String getBirthdate() {
+        try {
+            return birthdate.toString();
+        } catch (NullPointerException exception) {
+            return null;
+        }
     }
 
-    public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
+    public void setBirthdate(String birthdate) {
+        try {
+            this.birthdate = LocalDate.parse(birthdate);
+        } catch(NullPointerException exception) {
+            this.birthdate = null;
+        }
     }
 
     public UserRole getRole() {
