@@ -1,7 +1,9 @@
 package itjockebark.ptapp.service;
 
 import itjockebark.ptapp.dao.UserDAO;
+import itjockebark.ptapp.model.CustomUserService;
 import itjockebark.ptapp.model.UserRole;
+import itjockebark.ptapp.model.dto.UserGetDTO;
 import itjockebark.ptapp.model.dto.UserRegisterDTO;
 import itjockebark.ptapp.model.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +12,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService implements UserDetailsService {
 
-
+    public final String userNotFoundPrefix = "User with email address [\"%s\"] was not found";
     public final String rolePrefix = "USER";
 
     private final UserDAO userDAO;
@@ -25,8 +30,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userDAO.findById(email).orElseThrow(NullPointerException::new);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format(userNotFoundPrefix, email));
+        }
+        return new CustomUserService(user);
     }
 
     public void registerUser(UserRegisterDTO dto) {
@@ -45,6 +54,21 @@ public class UserService implements UserDetailsService {
 
     public void deleteUser() {
 
+    }
+
+    public List<UserGetDTO> getUsers() {
+        return userDAO.findAll().stream().map(UserService::getUserWithoutPassword).collect(Collectors.toList());
+    }
+
+    public static UserGetDTO getUserWithoutPassword(User user) {
+        UserGetDTO dto = new UserGetDTO();
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setRole(user.getRole());
+        dto.setIsActive(user.isActive());
+        dto.setBirthdate(user.getBirthdate());
+        return dto;
     }
 
 }
