@@ -23,10 +23,12 @@ public class UserService implements UserDetailsService {
 
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
+    private final UserValidatorService userValidatorService;
 
-    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder) {
+    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder, UserValidatorService userValidatorService) {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
+        this.userValidatorService = userValidatorService;
     }
 
     @Override
@@ -39,6 +41,8 @@ public class UserService implements UserDetailsService {
     }
 
     public void registerUser(UserRegisterDTO dto) {
+        validateUser(dto);
+
         User user = new User();
 
         user.setEmail(dto.getEmail());
@@ -52,6 +56,14 @@ public class UserService implements UserDetailsService {
         userDAO.save(user);
     }
 
+    public void validateUser(UserRegisterDTO dto) {
+        userValidatorService.validateEmail(dto.getEmail());
+        userValidatorService.validatePassword(dto.getPassword());
+        userValidatorService.validateDate(dto.getBirthdate());
+        userValidatorService.validateFirstName(dto.getFirstName());
+        userValidatorService.validateLastName(dto.getLastName());
+    }
+
     public void deleteUser() {
 
     }
@@ -59,6 +71,11 @@ public class UserService implements UserDetailsService {
     public List<UserGetDTO> getUsers() {
         return userDAO.findAll().stream().map(UserService::getUserWithoutPassword).collect(Collectors.toList());
     }
+
+/*    public UserGetDTO getUserById(String id) {
+        return userDAO.findById(id).map(UserService::getUserWithoutPassword).orElseThrow(() ->
+                new IllegalArgumentException(String.format(userNotFoundPrefix, id)));
+    }*/
 
     public static UserGetDTO getUserWithoutPassword(User user) {
         UserGetDTO dto = new UserGetDTO();
